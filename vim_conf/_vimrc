@@ -1,0 +1,456 @@
+" vim:set ts=8 sts=2 sw=2 tw=0: (この行に関しては:help modelineを参照)
+"
+" An example for a Japanese version gvimrc file.
+" 日本語版のデフォルトGUI設定ファイル(gvimrc) - Vim7用試作
+"
+" Last Change: 11-Jan-2013.
+" Maintainer:  MURAOKA Taro <koron.kaoriya@gmail.com>
+"
+" 解説:
+" このファイルにはVimの起動時に必ず設定される、GUI関連の設定が書かれていま
+" す。編集時の挙動に関する設定はvimrcに書かかれています。
+"
+" 個人用設定は_gvimrcというファイルを作成しそこで行ないます。_gvimrcはこの
+" ファイルの後に読込まれるため、ここに書かれた内容を上書きして設定することが
+" 出来ます。_gvimrcは$HOMEまたは$VIMに置いておく必要があります。$HOMEは$VIM
+" よりも優先され、$HOMEでみつかった場合$VIMは読込まれません。
+"
+" 管理者向けに本設定ファイルを直接書き換えずに済ませることを目的として、サイ
+" トローカルな設定を別ファイルで行なえるように配慮してあります。Vim起動時に
+" サイトローカルな設定ファイル($VIM/gvimrc_local.vim)が存在するならば、本設
+" 定ファイルの主要部分が読み込まれる前に自動的に読み込みます。
+"
+" 読み込み後、変数g:gvimrc_local_finishが非0の値に設定されていた場合には本設
+" 定ファイルに書かれた内容は一切実行されません。デフォルト動作を全て差し替え
+" たい場合に利用して下さい。
+"
+" 参考:
+"   :help gvimrc
+"   :echo $HOME
+"   :echo $VIM
+"   :version
+
+" =======================================================
+" momota added
+" =======================================================
+" Enable no Vi compatible commands.
+set nocompatible
+
+"カーソルを行頭、行末で止まらないようにする
+set whichwrap=b,s,h,l,<,>,[,]
+
+" カーソル行のハイライト
+set cursorline
+
+" 全角スペースを視覚化
+highlight ZenkakuSpace cterm=underline ctermfg=lightblue guibg=white
+match ZenkakuSpace /　/
+
+"クリップボードをWindowsと連携
+set clipboard=unnamed,autoselect
+
+" ステータスエリア関係
+" ステータスのところにファイル情報表示
+set statusline=%<[%n]%F%=\ %m%r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}\ %l,%c\ %P 
+
+syntax on
+
+set showmatch
+set autoindent
+set smartindent
+filetype plugin indent on
+
+"
+"  syntax highlight (cisco)
+"
+augroup filetype
+        au! BufRead,BufNewFile *.crules     set filetype=acl
+        au! BufRead,BufNewFile *.acl        set filetype=acl
+augroup END 
+
+" 垂直分割でヘルプを表示する [<Space> + h <help-file>]
+nnoremap <Space>h :<C-u>vert bel h<Space>
+
+" *.swpファイルを作成しない
+set noswapfile
+
+" Ctrl-cにESCをマッピング
+inoremap <C-c> <Esc>
+
+
+" -------------------------------------------------------
+" plugin
+" -------------------------------------------------------
+"
+"  pathogen
+"
+call pathogen#infect()
+call pathogen#helptags()
+
+"
+" neocomplcache 
+"
+let g:neocomplcache_enable_at_startup = 1 " 起動時に有効化
+
+"
+" neosnippet
+"
+"スニペットのディレクトリ
+" if !exists("g:neosnippet#snippets_directory")
+"     let g:neosnippet#snippets_directory=""
+" endif
+" let g:neosnippet#snippets_directory='~/vimfiles/snippet'
+
+" Plugin key-mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+
+" SuperTab like snippets behavior.
+imap <expr><TAB> neosnippet#expandable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For snippet_complete marker.
+if has('conceal')
+  set conceallevel=2 concealcursor=i
+endif
+
+"
+" unite
+"
+"unite prefix key.
+nnoremap [unite] <Nop>
+nmap <Space>f [unite]
+ 
+"unite general settings
+"インサートモードで開始
+let g:unite_enable_start_insert = 1
+"最近開いたファイル履歴の保存数
+let g:unite_source_file_mru_limit = 100
+ 
+"file_mruの表示フォーマットを指定。空にすると表示スピードが高速化される
+let g:unite_source_file_mru_filename_format = ''
+ 
+"現在開いているファイルのディレクトリ下のファイル一覧。
+"開いていない場合はカレントディレクトリ
+nnoremap <silent> [unite]f :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
+"バッファ一覧
+nnoremap <silent> [unite]b :<C-u>Unite buffer<CR>
+"レジスタ一覧
+nnoremap <silent> [unite]r :<C-u>Unite -buffer-name=register register<CR>
+"最近使用したファイル一覧
+nnoremap <silent> [unite]m :<C-u>Unite file_mru<CR>
+"ブックマーク一覧
+nnoremap <silent> [unite]c :<C-u>Unite bookmark<CR>
+"ブックマークに追加
+nnoremap <silent> [unite]a :<C-u>UniteBookmarkAdd<CR>
+"uniteを開いている間のキーマッピング
+autocmd FileType unite call s:unite_my_settings()
+function! s:unite_my_settings()"{{{
+  "ESCでuniteを終了
+  nmap <buffer> <ESC> <Plug>(unite_exit)
+  "入力モードのときjjでノーマルモードに移動
+  imap <buffer> jj <Plug>(unite_insert_leave)
+  "入力モードのときctrl+wでバックスラッシュも削除
+  imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
+  "ctrl+jで縦に分割して開く
+  nnoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
+  inoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
+  "ctrl+lで横に分割して開く
+  nnoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
+  inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
+  "ctrl+oでその場所に開く
+  nnoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
+  inoremap <silent> <buffer> <expr> <C-o> unite#do_action('open')
+endfunction"}}}
+
+
+"---------------------------------------------------------------------------
+" サイトローカルな設定($VIM/gvimrc_local.vim)があれば読み込む。読み込んだ後
+" に変数g:gvimrc_local_finishに非0な値が設定されていた場合には、それ以上の設
+" 定ファイルの読込を中止する。
+if 1 && filereadable($VIM . '/gvimrc_local.vim')
+  source $VIM/gvimrc_local.vim
+  if exists('g:gvimrc_local_finish') && g:gvimrc_local_finish != 0
+    finish
+  endif
+endif
+
+"---------------------------------------------------------------------------
+" ユーザ優先設定($HOME/.gvimrc_first.vim)があれば読み込む。読み込んだ後に変
+" 数g:gvimrc_first_finishに非0な値が設定されていた場合には、それ以上の設定
+" ファイルの読込を中止する。
+if 0 && exists('$HOME') && filereadable($HOME . '/.gvimrc_first.vim')
+  unlet! g:gvimrc_first_finish
+  source $HOME/.gvimrc_first.vim
+  if exists('g:gvimrc_first_finish') && g:gvimrc_first_finish != 0
+    finish
+  endif
+endif
+
+"---------------------------------------------------------------------------
+" Bram氏の提供する設定例をインクルード (別ファイル:vimrc_example.vim)。これ
+" 以前にg:no_gvimrc_exampleに非0な値を設定しておけばインクルードしない。
+if 1 && (!exists('g:no_gvimrc_example') || g:no_gvimrc_example == 0)
+  source $VIMRUNTIME/gvimrc_example.vim
+endif
+
+"---------------------------------------------------------------------------
+" カラー設定:
+"
+"colorscheme desert
+
+" ----------------------------------------
+" solarized
+" ----------------------------------------
+colorscheme solarized
+call togglebg#map("<F5>")
+if has('gui_running')
+    set background=light
+else
+    set background=dark
+endif
+
+"---------------------------------------------------------------------------
+" フォント設定:
+"
+if has('win32')
+  " Windows用
+  set guifont=MigMix_2M:h12:cSHIFTJIS
+  "set guifont=Osaka－等幅:h12:cSHIFTJIS
+  "set guifont=MS_Mincho:h12:cSHIFTJIS
+  " 行間隔の設定
+  set linespace=1
+  " 一部のUCS文字の幅を自動計測して決める
+  if has('kaoriya')
+    set ambiwidth=auto
+  endif
+elseif has('mac')
+  set guifont=Osaka－等幅:h14
+elseif has('xfontset')
+  " UNIX用 (xfontsetを使用)
+  set guifontset=a14,r14,k14
+endif
+
+"---------------------------------------------------------------------------
+" ウインドウに関する設定:
+"
+" ウインドウの幅
+set columns=150
+" ウインドウの高さ
+set lines=50
+" コマンドラインの高さ(GUI使用時)
+set cmdheight=2
+" 画面を黒地に白にする (次行の先頭の " を削除すれば有効になる)
+"colorscheme evening " (GUI使用時)
+
+"---------------------------------------------------------------------------
+" 日本語対応のための設定:
+"
+" ファイルを読込む時にトライする文字エンコードの順序を確定する。漢字コード自
+" 動判別機能を利用する場合には別途iconv.dllが必要。iconv.dllについては
+" README_w32j.txtを参照。ユーティリティスクリプトを読み込むことで設定される。
+source $VIM/plugins/kaoriya/encode_japan.vim
+" メッセージを日本語にする (Windowsでは自動的に判断・設定されている)
+if !(has('win32') || has('mac')) && has('multi_lang')
+  if !exists('$LANG') || $LANG.'X' ==# 'X'
+    if !exists('$LC_CTYPE') || $LC_CTYPE.'X' ==# 'X'
+      language ctype ja_JP.eucJP
+    endif
+    if !exists('$LC_MESSAGES') || $LC_MESSAGES.'X' ==# 'X'
+      language messages ja_JP.eucJP
+    endif
+  endif
+endif
+" MacOS Xメニューの日本語化 (メニュー表示前に行なう必要がある)
+if has('mac')
+  set langmenu=japanese
+endif
+" 日本語入力用のkeymapの設定例 (コメントアウト)
+if has('keymap')
+  " ローマ字仮名のkeymap
+  "silent! set keymap=japanese
+  "set iminsert=0 imsearch=0
+endif
+" 非GUI日本語コンソールを使っている場合の設定
+if !has('gui_running') && &encoding != 'cp932' && &term == 'win32'
+  set termencoding=cp932
+endif
+
+"---------------------------------------------------------------------------
+" 日本語入力に関する設定:
+"
+if has('multi_byte_ime') || has('xim')
+  " IME ON時のカーソルの色を設定(設定例:紫)
+"  highlight CursorIM guibg=Magenta guifg=NONE
+  highlight Cursor guifg=NONE guibg=Green
+  highlight CursorIM guifg=NONE guibg=Green
+  " 挿入モード・検索モードでのデフォルトのIME状態設定
+  set iminsert=0 imsearch=0
+  if has('xim') && has('GUI_GTK')
+    " XIMの入力開始キーを設定:
+    " 下記の s-space はShift+Spaceの意味でkinput2+canna用設定
+    "set imactivatekey=s-space
+  endif
+  " 挿入モードでのIME状態を記憶させない場合、次行のコメントを解除
+  "inoremap <silent> <ESC> <ESC>:set iminsert=0<CR>
+endif
+
+"---------------------------------------------------------------------------
+" マウスに関する設定:
+"
+" 解説:
+" mousefocusは幾つか問題(一例:ウィンドウを分割しているラインにカーソルがあっ
+" ている時の挙動)があるのでデフォルトでは設定しない。Windowsではmousehide
+" が、マウスカーソルをVimのタイトルバーに置き日本語を入力するとチラチラする
+" という問題を引き起す。
+"
+" どのモードでもマウスを使えるようにする
+set mouse=a
+" マウスの移動でフォーカスを自動的に切替えない (mousefocus:切替る)
+set nomousefocus
+" 入力時にマウスポインタを隠す (nomousehide:隠さない)
+set mousehide
+" ビジュアル選択(D&D他)を自動的にクリップボードへ (:help guioptions_a)
+"set guioptions+=a
+
+"---------------------------------------------------------------------------
+" メニューに関する設定:
+"
+" 解説:
+" "M"オプションが指定されたときはメニュー("m")・ツールバー("T")供に登録され
+" ないので、自動的にそれらの領域を削除するようにした。よって、デフォルトのそ
+" れらを無視してユーザが独自の一式を登録した場合には、それらが表示されないと
+" いう問題が生じ得る。しかしあまりにレアなケースであると考えられるので無視す
+" る。
+"
+if &guioptions =~# 'M'
+  let &guioptions = substitute(&guioptions, '[mT]', '', 'g')
+endif
+"
+"---------------------------------------------------------------------------
+" メニューファイルが存在しない場合は予め'guioptions'を調整しておく
+if 1 && !filereadable($VIMRUNTIME . '/menu.vim') && has('gui_running')
+  set guioptions+=M
+endif
+
+"---------------------------------------------------------------------------
+" Bram氏の提供する設定例をインクルード (別ファイル:vimrc_example.vim)。これ
+" 以前にg:no_vimrc_exampleに非0な値を設定しておけばインクルードはしない。
+if 1 && (!exists('g:no_vimrc_example') || g:no_vimrc_example == 0)
+  if &guioptions !~# "M"
+    " vimrc_example.vimを読み込む時はguioptionsにMフラグをつけて、syntax on
+    " やfiletype plugin onが引き起こすmenu.vimの読み込みを避ける。こうしない
+    " とencに対応するメニューファイルが読み込まれてしまい、これの後で読み込
+    " まれる.vimrcでencが設定された場合にその設定が反映されずメニューが文字
+    " 化けてしまう。
+    set guioptions+=M
+    source $VIMRUNTIME/vimrc_example.vim
+    set guioptions-=M
+  else
+    source $VIMRUNTIME/vimrc_example.vim
+  endif
+endif
+
+"---------------------------------------------------------------------------
+" その他、見栄えに関する設定:
+"
+" 検索文字列をハイライトしない(_vimrcではなく_gvimrcで設定する必要がある)
+"set nohlsearch
+
+"---------------------------------------------------------------------------
+" 検索の挙動に関する設定:
+"
+" 検索時に大文字小文字を無視 (noignorecase:無視しない)
+set ignorecase
+" 大文字小文字の両方が含まれている場合は大文字小文字を区別
+set smartcase
+
+"---------------------------------------------------------------------------
+" 編集に関する設定:
+"
+" タブの画面上での幅
+"set tabstop=8
+set tabstop=4
+" タブをスペースに展開しない (expandtab:展開する)
+"set noexpandtab
+set expandtab
+" 自動的にインデントする (noautoindent:インデントしない)
+set autoindent
+" バックスペースでインデントや改行を削除できるようにする
+set backspace=indent,eol,start
+" 検索時にファイルの最後まで行ったら最初に戻る (nowrapscan:戻らない)
+set wrapscan
+" 括弧入力時に対応する括弧を表示 (noshowmatch:表示しない)
+set showmatch
+" コマンドライン補完するときに強化されたものを使う(参照 :help wildmenu)
+set wildmenu
+" テキスト挿入中の自動折り返しを日本語に対応させる
+set formatoptions+=mM
+
+"---------------------------------------------------------------------------
+" GUI固有ではない画面表示の設定:
+"
+" 行番号を非表示 (number:表示)
+set number
+" ルーラーを表示 (noruler:非表示)
+set ruler
+" タブや改行を表示 (list:表示)
+set nolist
+" どの文字でタブや改行を表示するかを設定
+"set listchars=tab:>-,extends:<,trail:-,eol:<
+" 長い行を折り返して表示 (nowrap:折り返さない)
+set wrap
+" 常にステータス行を表示 (詳細は:he laststatus)
+set laststatus=2
+" コマンドラインの高さ (Windows用gvim使用時はgvimrcを編集すること)
+set cmdheight=2
+" コマンドをステータス行に表示
+set showcmd
+" タイトルを表示
+set title
+
+"
+"---------------------------------------------------------------------------
+" ファイル操作に関する設定:
+"
+" バックアップファイルを作成しない (次行の先頭の " を削除すれば有効になる)
+"set nobackup
+
+
+"---------------------------------------------------------------------------
+" 印刷に関する設定:
+"
+" 注釈:
+" 印刷はGUIでなくてもできるのでvimrcで設定したほうが良いかもしれない。この辺
+" りはWindowsではかなり曖昧。一般的に印刷には明朝、と言われることがあるらし
+" いのでデフォルトフォントは明朝にしておく。ゴシックを使いたい場合はコメント
+" アウトしてあるprintfontを参考に。
+"
+" 参考:
+"   :hardcopy
+"   :help 'printfont'
+"   :help printing
+"
+" 印刷用フォント
+if has('printer')
+  if has('win32')
+    " set printfont=MS_Mincho:h12:cSHIFTJIS
+    set printfont=MigMix_2M:h8:cSHIFTJIS
+    "set printfont=MS_Gothic:h12:cSHIFTJIS
+  endif
+endif
+
+
+"---------------------------------------------------------------------------
+" KaoriYaでバンドルしているプラグインのための設定
+
+" autofmt: 日本語文章のフォーマット(折り返し)プラグイン.
+set formatexpr=autofmt#japanese#formatexpr()
+
+" vimdoc-ja: 日本語ヘルプを無効化する.
+if kaoriya#switch#enabled('disable-vimdoc-ja')
+  let &rtp = join(filter(split(&rtp, ','), 'v:val !~ "vimdoc-ja"'), ',')
+endif
+
+" Copyright (C) 2011 KaoriYa/MURAOKA Taro
+
