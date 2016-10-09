@@ -1,0 +1,138 @@
+" vim: set ft=vim:
+"3.10.1 (created: 2015/08/25 00:41:59)
+
+" ----------------------------------------------------------------------
+"  plugin
+" ----------------------------------------------------------------------
+
+" git clone https://github.com/cd01/vimppm ~/.vimperator/vimppm
+source ~/.vimperator/vimppm/plugin/vimppm.js
+
+" Github にあるプラグイン
+"vimppm 'cd01/evernote-clearly-vimp'
+
+" Vimpr にあるプラグイン
+vimppm '_smooziee.js'
+vimppm 'copy.js'
+vimppm 'caret-hint.js'
+vimppm 'migemo-find.js'
+vimppm 'migemo_completion.js'
+vimppm 'migemo_hint.js'
+
+
+" ----------------------------------------------------------------------
+" copy.js
+
+javascript <<EOM
+(function () {
+  liberator.globalVariables.copy_templates = [
+    { label: 'titleAndURL',    value: '%TITLE%\n%URL%' },
+    { label: 'markdown',       value: '[%TITLE%](%URL%)' },
+    { label: 'title',          value: '%TITLE%' },
+    { label: 'anchor',         value: '<a href="%URL%">%TITLE%</a>' },
+    { label: 'selanchor',      value: '<a href="%URL%" title="%TITLE%">%SEL%</a>' },
+
+    { label: 'amazon',   value: 'copy clean amazon url from current page',
+      custom: function() {
+        var m = content.document.location.pathname.match(/dp\/(\d+)/);
+        return m ? ('http://amazon.jp/dp/' + m[1]) : null;
+      }
+    },
+  ];
+})();
+EOM
+
+
+
+" ----------------------------------------------------------------------
+"  一般設定
+" ----------------------------------------------------------------------
+
+" git clone https://github.com/vimpr/vimperator-colors ~/.vimperator/colors 
+colorscheme solarized_dark
+
+set editor="C:/Program\\ Files/vim80-kaoriya-win64/gvim.exe -f"
+
+" history size
+set history=1000
+
+" beep の代わりに visualbell を利用
+set visualbell
+
+" 入力欄にフォーカスしない
+"set focuscontent
+
+" Hintモードでアルファベット使用
+set hintchars=nvurhgytbkdmcielsxo
+
+" Hintモードのフォントサイズ
+"hi Hint z-index:5000; font-size:24px; color:#b58900; background-color:#002b36; border-color:ButtonShadow; border-width:0px; border-style:solid; padding:0px 2px 0px 2px; position:absolute;
+
+" h, l でタブ移動
+map h <C-p>
+map l <C-n>
+
+" j, k によるスクロール量を3倍にする
+noremap j <C-e>
+noremap k <C-y>
+
+" Uで最近閉じたタブを表示する
+map U :u<Space>
+
+" 検索時、大文字が含まれている場合にのみ case sensitiveにする
+set ignorecase
+set smartcase
+
+" 検索結果をハイライト
+set hlsearch
+
+" commandモードでIMEオフ
+style! -name=commandline-ime chrome://* #liberator-commandline-command input {ime-mode: inactive;}
+
+
+" ----------------------------------------------------------------------
+"  hatenabookmark
+" ----------------------------------------------------------------------
+
+javascript if (typeof hBookmark != 'undefined') liberator.loadScript('chrome://hatenabookmark/content/vimperator/plugin/hatenabookmark.js', {__proto__: this});
+nnoremap s :hbt<Space>
+nnoremap S :hbtc<Space>
+set complete+=H
+
+javascript <<EOF
+// キーボードショートカットの指定
+// 空(null)を指定すれば hints や nnoremap を上書きしなくなる
+liberator.globalVariables.hBookmark_shortcuts = {
+    hintsAdd     : 'a',
+    hintsComment : 'C',
+    add          : ['a'],
+    comment      : ['C'],
+};
+
+// コマンドの設定
+// ここから下の設定は、はてなブックマーク拡張のバージョン 1.2.4a1 以降で有効です。
+liberator.globalVariables.hBookmark_commands = {
+        hbsearch             : 'hb[search]',
+        hbsearch_tab         : 'hbt[absearch]',
+        hbsearch_comment     : 'hbc[omment]',
+        hbsearch_comment_tab : 'hbtc[omment]',
+        hbsearch_url         : 'hbu[rl]',
+        hbsearch_url_tab     : 'hbtu[rl]',
+        hbsearch_title       : 'hbti[tle]',
+        hbsearch_title_tab   : 'hbtti[tle]',
+};
+
+// :hb! url 等の bang(!) 付きで開いた場合の挙動。
+// 標準ははてブエントリーページを開く entryPage が設定されている。
+// 他に新規タブで開く openNewTab がある。
+// また、文字列ではなく自分で定義した関数をセットすることもできる。
+liberator.globalVariables.hBookmark_bangFunction = 'entryPage';
+
+// 検索時の wait(ms)
+liberator.globalVariables.hBookmark_search_interval = 1000;
+// 一度に検索する limit
+liberator.globalVariables.hBookmark_search_limit = 10;
+// 検索時の表示の最大件数。この件数に達するまで検索し続ける。
+liberator.globalVariables.hBookmark_search_max_limit = 100;
+
+EOF
