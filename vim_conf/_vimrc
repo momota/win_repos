@@ -1,101 +1,81 @@
 " ======================================================================
-" NeoBundle
+" dein.vim
 " ======================================================================
-" Note: Skip initialization for vim-tiny or vim-small.
-if 0 | endif
+" path for dein.vim
+let s:dein_dir = fnamemodify('~/.vim/dein/', ':p')
+let s:dein_repo_dir = s:dein_dir . 'repos/github.com/Shougo/dein.vim'
 
-if has('vim_starting')
-  if &compatible
-    set nocompatible               " Be iMproved
-  endif
-
-  " Required:
-  set runtimepath+=~/.vim/bundle/neobundle.vim/
+" dein.vim本体の存在チェックとインストール
+if !isdirectory(s:dein_repo_dir)
+    execute '!git clone https://github.com/Shougo/dein.vim' shellescape(s:dein_repo_dir)
 endif
 
-" Required:
-call neobundle#begin(expand('~/.vim/bundle/'))
+" dein.vim本体をランタイムパスに追加
+if &runtimepath !~# '/dein.vim'
+    execute 'set runtimepath^=' . s:dein_repo_dir
+endif
 
-" Let NeoBundle manage NeoBundle
-" Required:
-NeoBundleFetch 'Shougo/neobundle.vim'
+call dein#begin(s:dein_dir)
+call dein#add('Shougo/neocomplcache')
 
-" My Bundles here:
-" Refer to |:NeoBundle-examples|.
-" Note: You don't set neobundle setting in .gvimrc!
-
-" ----------------------------------------------------------------------
-" install plugins
-" GitHubリポジトリにあるプラグインを利用する
-NeoBundle 'Shougo/neosnippet.vim'
-NeoBundle 'Shougo/neosnippet-snippets'
-NeoBundle 'Shougo/neocomplete.vim'
-"NeoBundle 'Shougo/neocomplcache'
-NeoBundle 'Shougo/unite.vim'
-NeoBundle 'Shougo/neomru.vim'
-NeoBundle 'thinca/vim-quickrun'
-NeoBundle 'davidoc/taskpaper.vim'
-NeoBundle 'itchyny/lightline.vim'
-NeoBundle 'itchyny/vim-cursorword'
-NeoBundle 'itchyny/calendar.vim'
-NeoBundle 'nathanaelkane/vim-indent-guides'
-NeoBundle 'kana/vim-arpeggio'
-NeoBundle 'tpope/vim-fugitive'
-NeoBundle 'ctrlpvim/ctrlp.vim'
-NeoBundle 'rking/ag.vim'
-NeoBundle 'h1mesuke/vim-alignta'
+call dein#add('Shougo/neosnippet.vim')
+call dein#add('Shougo/neosnippet-snippets')
+call dein#add('Shougo/neocomplete.vim')
+call dein#add('Shougo/unite.vim')
+call dein#add('Shougo/neomru.vim')
+call dein#add('wincent/command-t')
+call dein#add('thinca/vim-quickrun')
+call dein#add('thinca/vim-fontzoom')
+call dein#add('davidoc/taskpaper.vim')
+call dein#add('itchyny/lightline.vim')
+call dein#add('itchyny/vim-cursorword')
+call dein#add('itchyny/calendar.vim')
+call dein#add('nathanaelkane/vim-indent-guides')
+call dein#add('kana/vim-arpeggio')
+call dein#add('tpope/vim-fugitive')
+call dein#add('ctrlpvim/ctrlp.vim')
+call dein#add('rking/ag.vim')
+call dein#add('h1mesuke/vim-alignta')
+call dein#add('vim-scripts/vim-auto-save')
+call dein#add('tpope/vim-surround')
 
 " lint
-NeoBundle 'scrooloose/syntastic'
+call dein#add('scrooloose/syntastic')
 
 " incsearch
-NeoBundle 'haya14busa/incsearch.vim'
-NeoBundle 'haya14busa/incsearch-fuzzy.vim'
-NeoBundle 'haya14busa/incsearch-migemo.vim'
+call dein#add('haya14busa/incsearch.vim')
+call dein#add('haya14busa/incsearch-fuzzy.vim')
+call dein#add('haya14busa/incsearch-migemo.vim')
 
 " syntax highlight
-NeoBundle 'plasticboy/vim-markdown'
-NeoBundle 'joker1007/vim-markdown-quote-syntax'
-NeoBundle 'vim-ruby/vim-ruby'
-NeoBundle 'slim-template/vim-slim'
-NeoBundle 'kchmck/vim-coffee-script'
-NeoBundle 'momota/junos.vim'
-NeoBundle 'momota/cisco.vim'
-NeoBundle 'Konfekt/FastFold'
+call dein#add('plasticboy/vim-markdown')
+call dein#add('joker1007/vim-markdown-quote-syntax')
+call dein#add('vim-ruby/vim-ruby')
+call dein#add('slim-template/vim-slim')
+call dein#add('kchmck/vim-coffee-script')
+call dein#add('momota/junos.vim')
+call dein#add('momota/cisco.vim')
+call dein#add('Konfekt/FastFold')
+call dein#add('hashivim/vim-terraform')
 
 " colorscheme
-NeoBundle 'flazz/vim-colorschemes'
-NeoBundle 'altercation/vim-colors-solarized'
-NeoBundle 'tomasr/molokai'
-
-"GitHub以外のGitリポジトリにあるプラグインを利用する
-"NeoBundle 'git://git.wincent.com/command-t.git'
-
-" vim-scripts リポジトリにあるプラグインを利用する
-NeoBundle 'surround.vim'
-
-"Git以外のリポジトリにあるプラグインを利用する
-" NeoBundle 'http://svn.macports.org/repository/macports/contrib/mpvim/'
-" NeoBundle 'https://bitbucket.org/ns9tks/vim-fuzzyfinder'
-
+call dein#add('flazz/vim-colorschemes')
+call dein#add('altercation/vim-colors-solarized')
+call dein#add('tomasr/molokai')
 
 " for windows (gvim)
-NeoBundle 'istepura/vim-toolbar-icons-silk'
-NeoBundle 'kannokanno/previm'
-NeoBundle 'tyru/open-browser.vim'
-NeoBundle 'PProvost/vim-ps1'
+call dein#add('istepura/vim-toolbar-icons-silk')
+call dein#add('kannokanno/previm')
+call dein#add('tyru/open-browser.vim')
+call dein#add('PProvost/vim-ps1')
 
-
-call neobundle#end()
-
-" Required:
+call dein#end()
 filetype plugin indent on
+syntax enable
 
-" If there are uninstalled bundles found on startup,
-" this will conveniently prompt you to install them.
-NeoBundleCheck
-
-
+if dein#check_install()
+  call dein#install()
+endif
 
 
 "
@@ -340,7 +320,7 @@ augroup END
 " syntastic
 "
 let g:syntastic_mode_map = { 'mode': 'active' }
-let g:syntastic_ruby_checkers = ['rubocop']
+"let g:syntastic_ruby_checkers = ['rubocop']
 "let g:syntastic_memo_checkers = ['textlint']
 "let g:syntastic_mail_checkers = ['textlint']
 "let g:syntastic_markdown_checkers = ['textlint']
@@ -351,6 +331,11 @@ let g:syntastic_ruby_checkers = ['rubocop']
 " let g:calendar_google_calendar = 1
 " let g:calendar_google_task = 1
 
+"
+" vim-auto-save
+"
+let g:auto_save = 1
+let g:auto_save_in_insert_mode = 0  " do not save while in insert mode
 
 "---------------------------------------------------------------------------
 " サイトローカルな設定($VIM/gvimrc_local.vim)があれば読み込む。読み込んだ後
@@ -387,6 +372,7 @@ endif
 "
 if has('win32')
   " Windows用
+  "set guifont=Ricty_Diminished_Discord_for_Po:h12:cSHIFTJIS
   set guifont=MigMix_2M:h12:cSHIFTJIS
   "set guifont=Osaka－等幅:h12:cSHIFTJIS
   "set guifont=MS_Mincho:h12:cSHIFTJIS
@@ -589,11 +575,12 @@ set title
 "
 " バックアップファイルを作成しない (次行の先頭の " を削除すれば有効になる)
 "set nobackup
-set backupdir=C:\Users\m-momota\vimbackup
+"set backupdir=C:\Users\m-momota\vimbackup
+set backupdir=$HOME\vimbackup
 
 " Undo ファイルを作成しない (次行の先頭の " を削除すれば有効になる)
 "set noundofile
-set undodir=C:\Users\m-momota\vimbackup
+set undodir=$HOME\vimbackup
 
 "---------------------------------------------------------------------------
 " 印刷に関する設定:
@@ -637,7 +624,7 @@ endif
 " momota added
 " =======================================================
 " change current directory
-cd C:\Users\m-momota\Desktop
+cd $HOME\Desktop
 
 " Enable no Vi compatible commands.
 set nocompatible
@@ -679,11 +666,14 @@ nnoremap <Space>h :<C-u>vert bel h<Space>
 " 垂直分割でdiff [<Space> + vd <diff-file>]
 nnoremap <Space>vd :<C-u>vertical diffsplit<Space>
 
-" *.swpファイルを作成しない
-set noswapfile
+" tにtabnewをマッピング
+nnoremap t :<C-u>tabnew<CR>
 
 " Ctrl-cにESCをマッピング
 inoremap <C-c> <Esc>
+
+" *.swpファイルを作成しない
+set noswapfile
 
 " 全角スペースを視覚化
 function! ZenkakuSpace() abort
@@ -711,4 +701,3 @@ set filetype=memo
 " set fileformat=unix
 " set fileencoding=utf-8
 " set encoding=utf-8
-

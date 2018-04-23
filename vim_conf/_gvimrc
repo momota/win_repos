@@ -3,7 +3,7 @@
 " An example for a Japanese version gvimrc file.
 " 日本語版のデフォルトGUI設定ファイル(gvimrc) - Vim7用試作
 "
-" Last Change: 29-Jun-2016.
+" Last Change: 23-Apr-2018.
 " Maintainer:  MURAOKA Taro <koron.kaoriya@gmail.com>
 "
 " 解説:
@@ -66,7 +66,8 @@ endif
 "
 if has('win32')
   " Windows用
-  set guifont=MigMix_2M:h12:cSHIFTJIS
+  set guifont=MigMix_2M:h14:cSHIFTJIS
+  "set guifont=Ricty_Diminished_Discord_for_Po:h14:cSHIFTJIS
   "set guifont=Osaka－等幅:h12:cSHIFTJIS
   "set guifont=MS_Mincho:h12:cSHIFTJIS
   " 行間隔の設定
@@ -75,6 +76,7 @@ if has('win32')
   if has('kaoriya')
     set ambiwidth=auto
   endif
+  set rop=type:directx,renmode:5
 elseif has('mac')
   set guifont=Osaka－等幅:h14
 elseif has('xfontset')
@@ -86,9 +88,9 @@ endif
 " ウインドウに関する設定:
 "
 " ウインドウの幅
-set columns=90
+set columns=120
 " ウインドウの高さ
-set lines=50
+set lines=40
 " コマンドラインの高さ(GUI使用時)
 set cmdheight=2
 " 画面を黒地に白にする (次行の先頭の " を削除すれば有効になる)
